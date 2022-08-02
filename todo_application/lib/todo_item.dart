@@ -1,3 +1,0 @@
-class Task {
-  String description = "";
-}
