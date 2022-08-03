@@ -40,16 +40,6 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    Stream stream = AddTaskBloc.of(context).someStream;
-    subscription?.cancel();
-    subscription = stream.listen((value) {
-      // do something
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
@@ -76,6 +66,12 @@ class MyHomePageState extends State<MyHomePage> {
               child: const Icon(Icons.add),
             )));
   }
+
+  @override
+  void dispose() {
+    _addTaskBloc.dispose();
+    super.dispose();
+  }
 }
 
 class TabMonth extends StatefulWidget {
@@ -87,21 +83,28 @@ class TabMonth extends StatefulWidget {
 }
 
 class TabMonthState extends State<TabMonth> {
+  List<Task>? _tasks = [];
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<List<Task>>(
         stream: widget.addTaskBloc.taskListStream,
-        builder: (BuildContext context, AsyncSnapshot<Task> snapshot) {
-          return snapshot.hasData
-              ? Text(snapshot.data.toString())
+        builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+          if (snapshot.hasData) {
+            _tasks = snapshot.data;
+          }
+          return _tasks!.isNotEmpty
+              ? ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                        title: Text(
+                          snapshot.data![index].description,
+                          style: const TextStyle(),
+                        ),
+                        trailing: const Icon(Icons.access_time));
+                  })
               : const Text('No tasks left for this month');
         });
-  }
-
-  @override
-  void dispose() {
-    widget.addTaskBloc.dispose();
-    super.dispose();
   }
 }
 
@@ -114,21 +117,28 @@ class TabWeek extends StatefulWidget {
 }
 
 class TabWeekState extends State<TabWeek> {
+  List<Task>? _tasks = [];
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: widget.addTaskBloc.taskListStream,
-        builder: (BuildContext context, AsyncSnapshot<Task> snapshot) {
-          return snapshot.hasData
-              ? Text(snapshot.data.toString())
+        builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            _tasks = snapshot.data;
+          }
+          return _tasks!.isNotEmpty
+              ? ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                        title: Text(
+                          snapshot.data![index].description,
+                          style: const TextStyle(),
+                        ),
+                        trailing: const Icon(Icons.access_time));
+                  })
               : const Text('No tasks left for this week');
         });
-  }
-
-  @override
-  void dispose() {
-    widget.addTaskBloc.dispose();
-    super.dispose();
   }
 }
 
@@ -141,22 +151,28 @@ class TabDay extends StatefulWidget {
 }
 
 class TabDayState extends State<TabDay> {
-  List<Task?> tasks = [];
+  List<Task>? _tasks = [];
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: widget.addTaskBloc.taskListStream,
-        builder: (BuildContext context, AsyncSnapshot<Task> snapshot) {
-          return snapshot.hasData
-              ? Text(snapshot.data.toString())
-              : const Text('No tasks left for this week');
+        builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+          if (snapshot.hasData) {
+            _tasks = snapshot.data;
+          }
+          return _tasks!.isNotEmpty
+              ? ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                        title: Text(
+                          snapshot.data![index].description,
+                          style: const TextStyle(),
+                        ),
+                        trailing: const Icon(Icons.access_time));
+                  })
+              : const Text('No tasks left for this day');
         });
-  }
-
-  @override
-  void dispose() {
-    widget.addTaskBloc.dispose();
-    super.dispose();
   }
 }
 

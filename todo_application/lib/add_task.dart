@@ -85,6 +85,6 @@ class _AddTaskState extends State<AddTask> {
   }
 
   _addTask() {
-    widget.addTaskBloc?.taskListSink.add(task);
+    widget.addTaskBloc?.taskAddSink.add(task);
   }
 }
